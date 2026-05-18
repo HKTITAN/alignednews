@@ -31,6 +31,9 @@ keystore.properties
 # --- macOS ---
 .DS_Store
 
-# --- Misc temp ---
+# --- Build output / release artifacts ---
 *.log
 *.tmp
+ALIGNED-*-x64.zip
+ALIGNED-android-*.apk
+ALIGNED-android-*.aab
