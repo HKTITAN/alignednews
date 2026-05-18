@@ -44,7 +44,7 @@ data class IconSpec(
     val rotationDeg: Float = 0f
 ) { init { require(lines.size == 3) { "icon $id must have exactly 3 lines" } } }
 
-/** Catalogue of the 26 ALIGNED icons. Generated from design/icons/*.svg. */
+/** Catalogue of the 26 ALIGNED icons. Generated from `design/icons/`. */
 object MorphingIcons {
 
     private fun line(x1: Int, y1: Int, x2: Int, y2: Int): IconLine =
