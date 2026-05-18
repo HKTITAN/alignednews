@@ -22,4 +22,9 @@ public sealed partial class FeedPage : Page
             win.NavigateToStory(id);
         }
     }
+
+    private void OnImageFailed(object sender, Microsoft.UI.Xaml.ExceptionRoutedEventArgs e)
+    {
+        if (sender is Image img) img.Visibility = Visibility.Collapsed;
+    }
 }

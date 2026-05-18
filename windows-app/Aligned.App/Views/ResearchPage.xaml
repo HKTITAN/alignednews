@@ -1,0 +1,150 @@
+<Page
+    x:Class="Aligned.App.Views.ResearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Aligned.App.ViewModels"
+    xmlns:ctl="using:Aligned.App.Controls"
+    Background="{ThemeResource AlignedBg}">
+
+    <Page.DataContext>
+        <vm:ResearchViewModel/>
+    </Page.DataContext>
+
+    <Grid Padding="{StaticResource AlignedPaddingScreen}" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="2">
+            <TextBlock Text="Research" Style="{StaticResource AlignedDisplayMd}"
+                       Foreground="{ThemeResource AlignedText}"/>
+            <TextBlock Text="{x:Bind ViewModel.SubtitleLine, Mode=OneWay}"
+                       Style="{StaticResource AlignedFootnote}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Background="{ThemeResource AlignedElev1}"
+                CornerRadius="{StaticResource AlignedChipCorner}"
+                Padding="14,8">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0"
+                         Text="{x:Bind ViewModel.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PlaceholderText="Research a topic in depth…"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         FontSize="15"
+                         VerticalAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Command="{x:Bind ViewModel.StartCommand}"
+                        Background="{ThemeResource AlignedAccent}"
+                        BorderThickness="0"
+                        CornerRadius="100"
+                        Padding="10">
+                    <ctl:MorphingIcon Width="16" Height="16"
+                                      Spec="{x:Bind ctl:MorphingIcons.Sparkle}"
+                                      IconBrush="{ThemeResource AlignedOnAccent}"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="12" Margin="0,0,4,40">
+                <TextBlock Visibility="{x:Bind ViewModel.HintVisibility, Mode=OneWay}"
+                           Text="Ask a deep question to kick off a multi-step research session."
+                           Foreground="{ThemeResource AlignedTextSecondary}"
+                           Style="{StaticResource AlignedFootnote}"
+                           Margin="0,40,0,0"
+                           HorizontalAlignment="Center"/>
+
+                <Border Style="{StaticResource AlignedCardBorder}"
+                        Visibility="{x:Bind ViewModel.StepsVisibility, Mode=OneWay}">
+                    <StackPanel Spacing="10">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Ellipse Width="8" Height="8">
+                                <Ellipse.Fill>
+                                    <SolidColorBrush Color="{x:Bind ViewModel.StatusColor, Mode=OneWay}"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <TextBlock Text="{x:Bind ViewModel.StatusLine, Mode=OneWay}"
+                                       Style="{StaticResource AlignedCaption}"
+                                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+                        </StackPanel>
+                        <ProgressBar Value="{x:Bind ViewModel.Progress, Mode=OneWay}"
+                                     Maximum="100"
+                                     IsIndeterminate="{x:Bind ViewModel.IsIndeterminate, Mode=OneWay}"
+                                     Foreground="{ThemeResource AlignedAccent}"/>
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.Steps, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ResearchStepVm">
+                                    <Grid ColumnSpacing="10" Padding="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{x:Bind StatusGlyph}"
+                                                   Foreground="{x:Bind StatusBrush, Mode=OneWay}"
+                                                   FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{x:Bind Name}"
+                                                   Foreground="{ThemeResource AlignedText}"
+                                                   FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{x:Bind Detail}"
+                                                   Foreground="{ThemeResource AlignedTextTertiary}"
+                                                   FontSize="12" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource AlignedCardBorder}"
+                        Visibility="{x:Bind ViewModel.AnswerVisibility, Mode=OneWay}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="ANSWER"
+                                   Style="{StaticResource AlignedCaption}"
+                                   Foreground="{ThemeResource AlignedTextSecondary}"/>
+                        <TextBlock Text="{x:Bind ViewModel.Answer, Mode=OneWay}"
+                                   Style="{StaticResource AlignedBody}"
+                                   Foreground="{ThemeResource AlignedText}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Insights, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="10"/>
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="vm:InsightVm">
+                            <Border Style="{StaticResource AlignedCardBorder}">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{x:Bind Title}"
+                                               Style="{StaticResource AlignedTitleSm}"
+                                               Foreground="{ThemeResource AlignedText}"/>
+                                    <TextBlock Text="{x:Bind Summary}"
+                                               Style="{StaticResource AlignedBody}"
+                                               Foreground="{ThemeResource AlignedTextSecondary}"
+                                               TextWrapping="Wrap"/>
+                                    <TextBlock Text="{x:Bind ConfidenceLabel}"
+                                               Foreground="{ThemeResource AlignedTextTertiary}"
+                                               FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

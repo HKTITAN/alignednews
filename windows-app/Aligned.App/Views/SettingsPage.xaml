@@ -1,0 +1,139 @@
+<Page
+    x:Class="Aligned.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Aligned.App.ViewModels"
+    Background="{ThemeResource AlignedBg}">
+
+    <Page.DataContext>
+        <vm:SettingsViewModel/>
+    </Page.DataContext>
+
+    <ScrollViewer Padding="{StaticResource AlignedPaddingScreen}">
+        <StackPanel Spacing="16" MaxWidth="720" HorizontalAlignment="Stretch">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Settings" Style="{StaticResource AlignedDisplayMd}"
+                           Foreground="{ThemeResource AlignedText}"/>
+                <TextBlock Text="Local preferences · v0.1.0"
+                           Style="{StaticResource AlignedFootnote}"
+                           Foreground="{ThemeResource AlignedTextSecondary}"/>
+            </StackPanel>
+
+            <TextBlock Text="BACKEND" Style="{StaticResource AlignedCaption}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"
+                       Margin="6,8,0,0"/>
+            <Border Style="{StaticResource AlignedCardBorder}">
+                <StackPanel>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Origin" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="alignednews.ai"
+                                   Foreground="{ThemeResource AlignedTextSecondary}" FontSize="14"/>
+                    </Grid>
+                    <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"/>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Health" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Health, Mode=OneWay}"
+                                   Foreground="{x:Bind ViewModel.HealthBrush, Mode=OneWay}" FontSize="14"/>
+                    </Grid>
+                    <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"/>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Stories live" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.StoryCount, Mode=OneWay}"
+                                   Foreground="{ThemeResource AlignedTextSecondary}" FontSize="14"/>
+                    </Grid>
+                    <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"/>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Last updated" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}"
+                                   Foreground="{ThemeResource AlignedTextSecondary}" FontSize="14"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="APPEARANCE" Style="{StaticResource AlignedCaption}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"
+                       Margin="6,8,0,0"/>
+            <Border Style="{StaticResource AlignedCardBorder}">
+                <StackPanel>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Theme" Foreground="{ThemeResource AlignedText}" FontSize="14" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1"
+                                  SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}"
+                                  MinWidth="160">
+                            <ComboBoxItem Content="Follow system"/>
+                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Dark"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="NOTIFICATIONS" Style="{StaticResource AlignedCaption}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"
+                       Margin="6,8,0,0"/>
+            <Border Style="{StaticResource AlignedCardBorder}">
+                <StackPanel Spacing="4">
+                    <ToggleSwitch Header="Breaking" IsOn="{x:Bind ViewModel.BreakingEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch Header="My topics" IsOn="{x:Bind ViewModel.TopicsEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch Header="Daily brief" IsOn="{x:Bind ViewModel.BriefEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch Header="Research ready" IsOn="{x:Bind ViewModel.ResearchEnabled, Mode=TwoWay}"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="ABOUT" Style="{StaticResource AlignedCaption}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"
+                       Margin="6,8,0,0"/>
+            <Border Style="{StaticResource AlignedCardBorder}">
+                <StackPanel>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Version" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="0.1.0"
+                                   Foreground="{ThemeResource AlignedTextSecondary}" FontSize="14"/>
+                    </Grid>
+                    <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"/>
+                    <Grid Padding="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="License" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="MIT"
+                                   Foreground="{ThemeResource AlignedTextSecondary}" FontSize="14"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource AlignedCardBorder}"
+                    Visibility="{x:Bind ViewModel.ErrorVisibility, Mode=OneWay}">
+                <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                           Foreground="{ThemeResource AlignedDestructive}"
+                           Style="{StaticResource AlignedFootnote}"
+                           TextWrapping="Wrap"/>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

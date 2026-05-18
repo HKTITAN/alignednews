@@ -9,25 +9,41 @@ import androidx.core.app.NotificationCompat
 import ai.aligned.MainActivity
 import ai.aligned.R
 import ai.aligned.net.AlignedApi
-import kotlinx.coroutines.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
- * Foreground service that polls /api/research?id=… until status == "complete".
- * Wired in fully at M9. This stub satisfies the manifest declaration.
+ * Foreground service that polls /api/research?id=… until status == "complete",
+ * then dispatches the "Research ready" notification via [NotificationCenter].
+ *
+ * Launch with:
+ *   ContextCompat.startForegroundService(ctx, Intent(ctx, ResearchPollService::class)
+ *      .putExtra(EXTRA_ID, id).putExtra(EXTRA_QUERY, query))
  */
+@AndroidEntryPoint
 class ResearchPollService : Service() {
+    @Inject lateinit var notifications: NotificationCenter
+
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val api = AlignedApi()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val researchId = intent?.getStringExtra(EXTRA_ID) ?: run { stopSelf(); return START_NOT_STICKY }
-        startForeground(NOTIF_ID, buildNotification("Researching…"))
+        val query = intent.getStringExtra(EXTRA_QUERY) ?: ""
+        startForeground(NOTIF_ID, buildNotification("Researching: $query"))
 
         scope.launch {
             while (isActive) {
                 val r = runCatching { api.research(researchId) }.getOrNull()
                 if (r != null && r.status == "complete") {
-                    // M6 will dispatch a "research ready" rich notification.
+                    notifications.onResearchReady(query.ifBlank { "Research session complete" })
                     stopSelf()
                     break
                 }
@@ -56,6 +72,7 @@ class ResearchPollService : Service() {
 
     companion object {
         const val EXTRA_ID = "research_id"
+        const val EXTRA_QUERY = "research_query"
         const val NOTIF_ID = 4242
     }
 }

@@ -72,4 +72,9 @@ class ChatViewModel @Inject constructor(
     }
 
     fun cancel() { streamJob?.cancel(); _state.update { it.copy(streaming = false) } }
+
+    fun clear() {
+        streamJob?.cancel()
+        _state.value = ChatState()
+    }
 }

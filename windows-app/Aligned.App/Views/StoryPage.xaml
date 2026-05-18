@@ -11,91 +11,234 @@
         <vm:StoryDetailViewModel/>
     </Page.DataContext>
 
-    <ScrollViewer Padding="{StaticResource AlignedPaddingScreen}">
-        <StackPanel Spacing="16" MaxWidth="720" HorizontalAlignment="Stretch">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <!-- Category -->
-            <TextBlock Text="{x:Bind ViewModel.Story.Category, Mode=OneWay}"
-                       FontSize="11" FontWeight="Medium"
-                       Foreground="{ThemeResource AlignedTextSecondary}"/>
-
-            <!-- Headline -->
-            <TextBlock Text="{x:Bind ViewModel.Story.Headline, Mode=OneWay}"
-                       FontFamily="{StaticResource AlignedFontDisplay}"
-                       FontSize="28" FontWeight="Bold"
-                       TextWrapping="Wrap"
-                       Foreground="{ThemeResource AlignedText}"/>
-
-            <!-- Summary -->
-            <TextBlock Text="{x:Bind ViewModel.Story.Summary, Mode=OneWay}"
-                       FontSize="17" LineHeight="24"
-                       TextWrapping="Wrap"
-                       Foreground="{ThemeResource AlignedTextSecondary}"/>
-
-            <!-- Vote bar -->
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <Button Command="{x:Bind ViewModel.VoteUpCommand}"
-                        Background="{ThemeResource AlignedElev1}"
-                        BorderBrush="{ThemeResource AlignedSeparator}"
-                        Padding="14,8" CornerRadius="100">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <ctl:MorphingIcon Width="16" Height="16"
-                                          Spec="{x:Bind ctl:MorphingIcons.Check}"
-                                          IconBrush="{ThemeResource AlignedText}"/>
-                        <TextBlock Text="Useful" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
-                    </StackPanel>
+        <!-- Top bar -->
+        <Grid Grid.Row="0" Padding="12,8" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Click="OnBackClick"
+                    Background="Transparent" BorderThickness="0"
+                    Padding="10" CornerRadius="{StaticResource AlignedTapCorner}"
+                    ToolTipService.ToolTip="Back">
+                <ctl:MorphingIcon Width="20" Height="20"
+                                  Spec="{x:Bind ctl:MorphingIcons.ChevronLeft}"
+                                  IconBrush="{ThemeResource AlignedText}"/>
+            </Button>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                <Button Command="{x:Bind ViewModel.ToggleBookmarkCommand}"
+                        Background="Transparent" BorderThickness="0"
+                        Padding="10" CornerRadius="{StaticResource AlignedTapCorner}"
+                        ToolTipService.ToolTip="Bookmark">
+                    <ctl:MorphingIcon Width="20" Height="20"
+                                      Spec="{x:Bind ctl:MorphingIcons.Bookmark}"
+                                      IconBrush="{x:Bind ViewModel.BookmarkBrush, Mode=OneWay}"/>
                 </Button>
-                <Button Command="{x:Bind ViewModel.VoteDownCommand}"
-                        Background="{ThemeResource AlignedElev1}"
-                        BorderBrush="{ThemeResource AlignedSeparator}"
-                        Padding="14,8" CornerRadius="100">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <ctl:MorphingIcon Width="16" Height="16"
-                                          Spec="{x:Bind ctl:MorphingIcons.Close}"
-                                          IconBrush="{ThemeResource AlignedText}"/>
-                        <TextBlock Text="Not useful" Foreground="{ThemeResource AlignedText}" FontSize="14"/>
-                    </StackPanel>
+                <Button Click="OnShareClick"
+                        Background="Transparent" BorderThickness="0"
+                        Padding="10" CornerRadius="{StaticResource AlignedTapCorner}"
+                        ToolTipService.ToolTip="Copy share link">
+                    <ctl:MorphingIcon Width="20" Height="20"
+                                      Spec="{x:Bind ctl:MorphingIcons.Share}"
+                                      IconBrush="{ThemeResource AlignedText}"/>
                 </Button>
-                <TextBlock VerticalAlignment="Center" FontSize="13"
-                           Text="{x:Bind ViewModel.LastVote, Mode=OneWay}"
-                           Foreground="{ThemeResource AlignedTextSecondary}"/>
             </StackPanel>
+        </Grid>
 
-            <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"/>
+        <ScrollViewer Grid.Row="1" Padding="{StaticResource AlignedPaddingScreen}">
+            <StackPanel Spacing="16" MaxWidth="760" HorizontalAlignment="Stretch">
 
-            <!-- Tweets -->
-            <TextBlock Text="Source posts" FontSize="13" FontWeight="SemiBold"
-                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+                <!-- Loading state -->
+                <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                              Visibility="{x:Bind ViewModel.IsLoadingVisibility, Mode=OneWay}"
+                              Width="28" Height="28"
+                              Foreground="{ThemeResource AlignedText}"
+                              HorizontalAlignment="Center"
+                              Margin="0,60,0,0"/>
 
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Tweets, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <StackLayout Spacing="12"/>
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="dto:TweetDto">
-                        <Border Background="{ThemeResource AlignedElev1}"
-                                CornerRadius="{StaticResource AlignedCardCorner}"
-                                Padding="{StaticResource AlignedPaddingCard}">
-                            <StackPanel Spacing="6">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="{x:Bind AuthorName}" FontWeight="SemiBold"
-                                               Foreground="{ThemeResource AlignedText}" FontSize="14"/>
-                                    <TextBlock Text="{x:Bind AuthorUsername}" Foreground="{ThemeResource AlignedTextSecondary}" FontSize="13"/>
-                                </StackPanel>
-                                <TextBlock Text="{x:Bind Text}" TextWrapping="Wrap"
-                                           Foreground="{ThemeResource AlignedText}" FontSize="15" LineHeight="20"/>
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="{x:Bind Likes}"    Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
-                                    <TextBlock Text="{x:Bind Retweets}" Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
-                                    <TextBlock Text="{x:Bind Replies}"  Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
-                                    <TextBlock Text="{x:Bind Views}"    Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
-                                </StackPanel>
-                            </StackPanel>
+                <!-- Error -->
+                <TextBlock Visibility="{x:Bind ViewModel.ErrorVisibility, Mode=OneWay}"
+                           Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                           Foreground="{ThemeResource AlignedDestructive}"
+                           Style="{StaticResource AlignedFootnote}"
+                           HorizontalAlignment="Center" Margin="0,60,0,0"/>
+
+                <!-- Category strip -->
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center"
+                            Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}">
+                    <Ellipse Width="10" Height="10">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{x:Bind ViewModel.CategoryDot, Mode=OneWay}"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock Text="{x:Bind ViewModel.CategoryLabel, Mode=OneWay}"
+                               Style="{StaticResource AlignedCaption}"
+                               Foreground="{ThemeResource AlignedTextSecondary}"/>
+                </StackPanel>
+
+                <!-- Headline -->
+                <TextBlock Text="{x:Bind ViewModel.Story.Headline, Mode=OneWay}"
+                           Style="{StaticResource AlignedDisplayMd}"
+                           Foreground="{ThemeResource AlignedText}"
+                           TextWrapping="Wrap"
+                           Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}"/>
+
+                <!-- Summary -->
+                <TextBlock Text="{x:Bind ViewModel.Story.Summary, Mode=OneWay}"
+                           FontSize="17" LineHeight="24"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource AlignedTextSecondary}"
+                           Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}"/>
+
+                <!-- Vote bar -->
+                <StackPanel Orientation="Horizontal" Spacing="10"
+                            Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}">
+                    <Button Command="{x:Bind ViewModel.VoteUpCommand}"
+                            Background="{ThemeResource AlignedElev1}"
+                            BorderThickness="0"
+                            Padding="14,9" CornerRadius="{StaticResource AlignedChipCorner}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <ctl:MorphingIcon Width="14" Height="14"
+                                              Spec="{x:Bind ctl:MorphingIcons.Check}"
+                                              IconBrush="{ThemeResource AlignedText}"/>
+                            <TextBlock Text="Useful" Foreground="{ThemeResource AlignedText}" FontSize="13"
+                                       FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{x:Bind ViewModel.VoteDownCommand}"
+                            Background="{ThemeResource AlignedElev1}"
+                            BorderThickness="0"
+                            Padding="14,9" CornerRadius="{StaticResource AlignedChipCorner}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <ctl:MorphingIcon Width="14" Height="14"
+                                              Spec="{x:Bind ctl:MorphingIcons.Close}"
+                                              IconBrush="{ThemeResource AlignedText}"/>
+                            <TextBlock Text="Not useful" Foreground="{ThemeResource AlignedText}" FontSize="13"
+                                       FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock VerticalAlignment="Center" FontSize="13"
+                               Text="{x:Bind ViewModel.LastVote, Mode=OneWay}"
+                               Foreground="{ThemeResource AlignedTextSecondary}"/>
+                </StackPanel>
+
+                <!-- Infographic CTA -->
+                <Button Click="OnInfographicClick"
+                        Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Background="{ThemeResource AlignedElev1}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource AlignedCardCorner}"
+                        Padding="14,12">
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="36" Height="36"
+                                CornerRadius="{StaticResource AlignedTapCorner}"
+                                Background="{ThemeResource AlignedSurface}">
+                            <ctl:MorphingIcon Width="18" Height="18"
+                                              Spec="{x:Bind ctl:MorphingIcons.Sparkle}"
+                                              IconBrush="{ThemeResource AlignedAccent}"/>
                         </Border>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
+                        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="View infographic"
+                                       Foreground="{ThemeResource AlignedText}"
+                                       FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="AI-rendered visual summary"
+                                       Foreground="{ThemeResource AlignedTextSecondary}"
+                                       FontSize="12"/>
+                        </StackPanel>
+                        <ctl:MorphingIcon Grid.Column="2" Width="14" Height="14"
+                                          VerticalAlignment="Center"
+                                          Spec="{x:Bind ctl:MorphingIcons.ChevronRight}"
+                                          IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                    </Grid>
+                </Button>
 
-        </StackPanel>
-    </ScrollViewer>
+                <Rectangle Height="0.5" Fill="{ThemeResource AlignedSeparator}"
+                           Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}"/>
+
+                <!-- Source posts header -->
+                <TextBlock Text="SOURCE POSTS"
+                           Style="{StaticResource AlignedCaption}"
+                           Foreground="{ThemeResource AlignedTextSecondary}"
+                           Visibility="{x:Bind ViewModel.ReadyVisibility, Mode=OneWay}"/>
+
+                <!-- Tweet list -->
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Tweets, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="12"/>
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="dto:TweetDto">
+                            <Border Style="{StaticResource AlignedCardBorder}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                        <Ellipse Width="32" Height="32">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{x:Bind AuthorProfileImage}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind AuthorName}" FontWeight="SemiBold"
+                                                       Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                                            <TextBlock Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12">
+                                                <Run Text="@"/>
+                                                <Run Text="{x:Bind AuthorUsername}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind Text}" TextWrapping="Wrap"
+                                               Foreground="{ThemeResource AlignedText}" FontSize="15" LineHeight="21"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="14">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <ctl:MorphingIcon Width="12" Height="12" VerticalAlignment="Center"
+                                                              Spec="{x:Bind ctl:MorphingIcons.Heart}"
+                                                              IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                                            <TextBlock Text="{x:Bind vm:StoryDetailViewModel.FormatNum(Likes)}"
+                                                       Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <ctl:MorphingIcon Width="12" Height="12" VerticalAlignment="Center"
+                                                              Spec="{x:Bind ctl:MorphingIcons.Retweet}"
+                                                              IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                                            <TextBlock Text="{x:Bind vm:StoryDetailViewModel.FormatNum(Retweets)}"
+                                                       Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <ctl:MorphingIcon Width="12" Height="12" VerticalAlignment="Center"
+                                                              Spec="{x:Bind ctl:MorphingIcons.Reply}"
+                                                              IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                                            <TextBlock Text="{x:Bind vm:StoryDetailViewModel.FormatNum(Replies)}"
+                                                       Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <ctl:MorphingIcon Width="12" Height="12" VerticalAlignment="Center"
+                                                              Spec="{x:Bind ctl:MorphingIcons.Eye}"
+                                                              IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                                            <TextBlock Text="{x:Bind vm:StoryDetailViewModel.FormatNum(Views)}"
+                                                       Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Page>

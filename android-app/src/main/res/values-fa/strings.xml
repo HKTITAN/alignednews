@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">الاینند</string>
+
+    <string name="tab_feed">جریان</string>
+    <string name="tab_brief">امروز</string>
+    <string name="tab_map">نقشه</string>
+    <string name="tab_chat">پرسش</string>
+    <string name="tab_settings">بیشتر</string>
+
+    <string name="feed_empty">هنوز چیزی نیست. برای تازه‌سازی به پایین بکشید.</string>
+    <string name="feed_loading">در حال بارگیری…</string>
+    <string name="feed_error">دسترسی به alignednews.ai ممکن نشد. نتایج کش شده نمایش داده می‌شود.</string>
+
+    <string name="story_share">اشتراک‌گذاری</string>
+    <string name="story_vote_up">مفید بود</string>
+    <string name="story_vote_down">مفید نبود</string>
+
+    <string name="notif_channel_breaking">فوری</string>
+    <string name="notif_channel_topics">موضوع‌های من</string>
+    <string name="notif_channel_brief">خلاصه روزانه</string>
+    <string name="notif_channel_research">پژوهش آماده است</string>
+    <string name="notif_channel_chat">گفتگو</string>
+    <string name="notif_channel_system">سامانه</string>
+</resources>

@@ -1,20 +1,23 @@
 using Aligned.Core.Net;
-using Microsoft.Windows.AppNotifications;
-using Microsoft.Windows.AppNotifications.Builder;
 
 namespace Aligned.Background;
 
 /// <summary>
-/// Hot-tier background sync (M5 will wire this to a Windows BackgroundTask
-/// registered via AppNotificationManager.Default and a maintenance trigger).
-/// For now: poll-once-and-exit, dispatch a "daily brief" toast if a new
-/// /api/lists overview timestamp is observed vs. the last persisted value.
+/// Hot-tier background sync (M5).
+///
+/// Behavior:
+///  - Pulls /api/news + /api/lists once.
+///  - Writes the latest brief timestamp to %LOCALAPPDATA%/Aligned/last_brief.txt
+///    so the main app can show a "new brief available" badge on next launch.
+///  - Returns 0 on success, 1 on network failure.
+///
+/// This is a headless cross-platform exe (no WinAppSDK dependency) so it can be
+/// scheduled via Task Scheduler without bringing in the full MSIX toolchain.
 /// </summary>
 internal class Program
 {
     static async Task<int> Main(string[] args)
     {
-        AppNotificationManager.Default.Register();
         try
         {
             using var api = new AlignedApi();
@@ -27,11 +30,11 @@ internal class Program
             if (!string.IsNullOrEmpty(ts) && ts != lastKnown)
             {
                 LastBriefStamp.Write(ts);
-                var note = new AppNotificationBuilder()
-                    .AddText("ALIGNED — today's brief")
-                    .AddText($"{count} stories synced · {DateTime.Now:t}")
-                    .BuildNotification();
-                AppNotificationManager.Default.Show(note);
+                Console.WriteLine($"[brief] new overview at {ts} — {count} stories");
+            }
+            else
+            {
+                Console.WriteLine($"[sync] {count} stories, no new brief");
             }
             return 0;
         }

@@ -1,7 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using Aligned.App.Views;
 
 namespace Aligned.App;
@@ -11,6 +10,7 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ExtendsContentIntoTitleBar = true;
         ContentFrame.Navigate(typeof(FeedPage));
     }
 
@@ -18,19 +18,26 @@ public sealed partial class MainWindow : Window
     {
         if (e.SelectedItemContainer is not NavigationViewItem item) return;
         var tag = item.Tag as string;
-        var (page, parameter) = tag switch
+        var page = tag switch
         {
-            "feed"     => (typeof(FeedPage),        (object?)null),
-            "chat"     => (typeof(ChatPage),        null),
-            "brief"    => (typeof(PlaceholderPage), "brief"),
-            "map"      => (typeof(PlaceholderPage), "map"),
-            "research" => (typeof(PlaceholderPage), "research"),
-            "settings" => (typeof(PlaceholderPage), "settings"),
-            _          => (typeof(FeedPage), null)
+            "feed"       => typeof(FeedPage),
+            "brief"      => typeof(BriefPage),
+            "map"        => typeof(MapPage),
+            "events"     => typeof(EventsPage),
+            "search"     => typeof(SearchPage),
+            "chat"       => typeof(ChatPage),
+            "summarize"  => typeof(SummarizePage),
+            "research"   => typeof(ResearchPage),
+            "bookmarks"  => typeof(BookmarksPage),
+            "history"    => typeof(HistoryPage),
+            "categories" => typeof(CategoriesPage),
+            "accounts"   => typeof(AccountsPage),
+            "settings"   => typeof(SettingsPage),
+            _            => typeof(FeedPage)
         };
-        ContentFrame.Navigate(page, parameter, new SuppressNavigationTransitionInfo());
+        ContentFrame.Navigate(page, null, new EntranceNavigationTransitionInfo());
     }
 
     public void NavigateToStory(string id) =>
-        ContentFrame.Navigate(typeof(StoryPage), id);
+        ContentFrame.Navigate(typeof(StoryPage), id, new DrillInNavigationTransitionInfo());
 }

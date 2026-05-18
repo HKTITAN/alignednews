@@ -51,7 +51,8 @@ jobs:
           path: ALIGNED-windows-x64.zip
 
   # ────────────────────────────────────────────────────────────────────
-  # Android: assemble debug APK (no key signing config required for v0.1)
+  # Android: assemble debug + release APKs.
+  # Release is signed with the debug keystore until an upload key is added.
   # ────────────────────────────────────────────────────────────────────
   android:
     runs-on: ubuntu-latest
@@ -75,22 +76,23 @@ jobs:
       - name: Gradle wrapper
         run: gradle wrapper --gradle-version 8.10.2
 
-      - name: Build debug APK
-        run: ./gradlew :android-app:assembleDebug --stacktrace
+      - name: Build APKs
+        run: ./gradlew :android-app:assembleDebug :android-app:assembleRelease --stacktrace
 
-      - name: Rename APK
+      - name: Stage artifacts
         run: |
           mkdir -p out
           cp android-app/build/outputs/apk/debug/android-app-debug.apk out/ALIGNED-android-debug.apk
+          cp android-app/build/outputs/apk/release/android-app-release.apk out/ALIGNED-android-release.apk
 
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ALIGNED-android-debug
-          path: out/ALIGNED-android-debug.apk
+          name: ALIGNED-android
+          path: out/*.apk
 
   # ────────────────────────────────────────────────────────────────────
-  # Attach both artifacts to the GitHub release for the pushed tag.
+  # Attach all artifacts to the GitHub release for the pushed tag.
   # ────────────────────────────────────────────────────────────────────
   release:
     needs: [windows, android]
@@ -104,10 +106,10 @@ jobs:
           name: ALIGNED-windows-x64
           path: ./assets
 
-      - name: Download Android artifact
+      - name: Download Android artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ALIGNED-android-debug
+          name: ALIGNED-android
           path: ./assets
 
       - name: Determine tag
@@ -126,5 +128,6 @@ jobs:
           files: |
             assets/ALIGNED-windows-x64.zip
             assets/ALIGNED-android-debug.apk
+            assets/ALIGNED-android-release.apk
           generate_release_notes: true
           fail_on_unmatched_files: false

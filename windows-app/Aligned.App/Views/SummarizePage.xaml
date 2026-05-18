@@ -1,0 +1,175 @@
+<Page
+    x:Class="Aligned.App.Views.SummarizePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Aligned.App.ViewModels"
+    xmlns:dto="using:Aligned.Core.Net.Dto"
+    xmlns:ctl="using:Aligned.App.Controls"
+    Background="{ThemeResource AlignedBg}">
+
+    <Page.DataContext>
+        <vm:SummarizeViewModel/>
+    </Page.DataContext>
+
+    <Grid Padding="{StaticResource AlignedPaddingScreen}" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Spacing="2">
+                <TextBlock Text="Summarize" Style="{StaticResource AlignedDisplayMd}"
+                           Foreground="{ThemeResource AlignedText}"/>
+                <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}"
+                           Style="{StaticResource AlignedFootnote}"
+                           Foreground="{ThemeResource AlignedTextSecondary}"/>
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Command="{x:Bind ViewModel.ClearCommand}"
+                    Visibility="{x:Bind ViewModel.ClearVisibility, Mode=OneWay}"
+                    Background="Transparent" BorderThickness="0"
+                    Padding="10" CornerRadius="{StaticResource AlignedTapCorner}">
+                <ctl:MorphingIcon Width="18" Height="18"
+                                  Spec="{x:Bind ctl:MorphingIcons.Close}"
+                                  IconBrush="{ThemeResource AlignedText}"/>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Background="{ThemeResource AlignedElev1}"
+                CornerRadius="{StaticResource AlignedChipCorner}"
+                Padding="14,8">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ctl:MorphingIcon Grid.Column="0" Width="16" Height="16" VerticalAlignment="Center"
+                                  Spec="{x:Bind ctl:MorphingIcons.Share}"
+                                  IconBrush="{ThemeResource AlignedTextSecondary}"/>
+                <TextBox Grid.Column="1"
+                         Text="{x:Bind ViewModel.Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PlaceholderText="https://x.com/…/status/…"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         FontSize="15"
+                         VerticalAlignment="Center"
+                         KeyDown="OnInputKeyDown"/>
+                <Button Grid.Column="2"
+                        Command="{x:Bind ViewModel.SubmitCommand}"
+                        Background="{ThemeResource AlignedAccent}"
+                        BorderThickness="0"
+                        CornerRadius="100"
+                        Padding="10">
+                    <ctl:MorphingIcon Width="16" Height="16"
+                                      Spec="{x:Bind ctl:MorphingIcons.Sparkle}"
+                                      IconBrush="{ThemeResource AlignedOnAccent}"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="12" Margin="0,0,4,40">
+                <TextBlock Visibility="{x:Bind ViewModel.HintVisibility, Mode=OneWay}"
+                           TextWrapping="Wrap"
+                           Style="{StaticResource AlignedBody}"
+                           Foreground="{ThemeResource AlignedTextSecondary}"
+                           Text="Paste a tweet link to summarize the whole thread, including quoted and replied tweets. If alignednews.ai already follows the story, we'll pull the full cluster."/>
+
+                <TextBlock Visibility="{x:Bind ViewModel.ErrorVisibility, Mode=OneWay}"
+                           Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                           Style="{StaticResource AlignedFootnote}"
+                           Foreground="{ThemeResource AlignedDestructive}"
+                           TextWrapping="Wrap"/>
+
+                <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                              Width="24" Height="24" HorizontalAlignment="Center"
+                              Foreground="{ThemeResource AlignedText}"/>
+
+                <StackPanel Visibility="{x:Bind ViewModel.ResultVisibility, Mode=OneWay}" Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <Ellipse Width="6" Height="6" Fill="{ThemeResource AlignedAccent}"/>
+                        <TextBlock Text="{x:Bind ViewModel.Source, Mode=OneWay}"
+                                   Style="{StaticResource AlignedCaption}"
+                                   Foreground="{ThemeResource AlignedTextSecondary}"/>
+                    </StackPanel>
+
+                    <Border Style="{StaticResource AlignedCardBorder}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="OVERVIEW"
+                                       Style="{StaticResource AlignedCaption}"
+                                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+                            <TextBlock Text="{x:Bind ViewModel.Overview, Mode=OneWay}"
+                                       Foreground="{ThemeResource AlignedText}"
+                                       FontSize="15" LineHeight="22"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="KEY POINTS"
+                               Style="{StaticResource AlignedCaption}"
+                               Foreground="{ThemeResource AlignedTextSecondary}"
+                               Margin="6,4,0,0"/>
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.Bullets, Mode=OneWay}">
+                        <ItemsRepeater.Layout><StackLayout Spacing="8"/></ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Border Style="{StaticResource AlignedCardBorder}" Padding="14,12">
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Column="0" Width="6" Height="6"
+                                                 VerticalAlignment="Top" Margin="0,8,0,0"
+                                                 Fill="{ThemeResource AlignedTextTertiary}"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind}"
+                                                   Foreground="{ThemeResource AlignedText}"
+                                                   FontSize="14" LineHeight="20"
+                                                   TextWrapping="Wrap"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+
+                    <Button Visibility="{x:Bind ViewModel.ResolvedStoryVisibility, Mode=OneWay}"
+                            Click="OnOpenStoryClick"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="{ThemeResource AlignedElev1}"
+                            BorderThickness="0"
+                            CornerRadius="{StaticResource AlignedCardCorner}"
+                            Padding="14">
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="OPEN STORY"
+                                           Style="{StaticResource AlignedCaption}"
+                                           Foreground="{ThemeResource AlignedTextSecondary}"/>
+                                <TextBlock Text="{x:Bind ViewModel.ResolvedStory.Headline, Mode=OneWay}"
+                                           Foreground="{ThemeResource AlignedText}"
+                                           FontSize="14" FontWeight="SemiBold"
+                                           TextWrapping="Wrap" MaxLines="2"/>
+                            </StackPanel>
+                            <ctl:MorphingIcon Grid.Column="1" Width="14" Height="14"
+                                              VerticalAlignment="Center"
+                                              Spec="{x:Bind ctl:MorphingIcons.ChevronRight}"
+                                              IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

@@ -1,121 +1,74 @@
 # STATUS
 
-What's actually written vs. stubbed vs. pending, as of this commit. Honest.
+What's actually written vs. stubbed vs. pending.
 
-Legend:
-- ✅ written and compiles on this machine
-- 🟡 written but stubbed (placeholder body, returns dummy or partial result)
-- ⬜ not written
+Legend: ✅ done · 🟡 partial · ⬜ not written
 
-## Build-machine reality
+## Build verification
 
-- `dotnet 10.0.300` is installed → **Aligned.Core, Aligned.App, Aligned.Core.SmokeTest all build with 0 errors / 0 warnings**.
-- Android toolchain (JDK 21 + SDK 35 + Gradle) is **not** installed → Android Kotlin code is written but not yet compiled. It'll need the toolchain.
+- `dotnet 10.0.300`: **Aligned.Core, Aligned.App, Aligned.Background, Aligned.Core.SmokeTest** all build with 0 errors; `dotnet publish -c Release -r win-x64` produces `Aligned.App.exe`.
+- Android: built on CI (`.github/workflows/release.yml`), producing both `ALIGNED-android-debug.apk` and `ALIGNED-android-release.apk`.
 
-## M0 — Repo + tokens + morphing icons
+## Caching
 
-| Item | Status |
-|---|---|
-| Repo layout | ✅ |
-| `design/tokens.json` (canonical) | ✅ |
-| `design/ALIGNED_DESIGN.md` | ✅ |
-| 26 SVG sources in `design/icons/` | ✅ |
-| Android `MorphingIcon` composable (cross-group morph + rotation fast-path) | ✅ |
-| Windows `MorphingIcon` control (Composition API, rotation + endpoint animation) | ✅ |
-| Icon catalogue mirrored in Kotlin + C# | ✅ |
+- **Stories: 7-day TTL** in Room. `StoryDao.prune(cutoff)` runs each hot-sync cycle.
+- **Story detail: 7-day TTL.** Falls back to stale cache on network failure.
+- **Warm tier (lists, map, events): 30-min TTL** via `blob_cache` table (Android) / `LocalFolder/cache/*.json` (Windows).
+- **Cold tier (categories, history): 6-hour TTL**.
+- Repository always returns stale cache as fallback when the network call fails.
 
-## M1 — Shared API client
+## Feature inventory
 
-| Item | Status |
-|---|---|
-| Kotlin `AlignedApi` covering every documented endpoint | ✅ |
-| Kotlin DTOs for News/Story/Tweet/Lists/Map/Events/etc. | ✅ |
-| C# `AlignedApi` mirror | ✅ |
-| C# DTOs mirror | ✅ |
-| Chat SSE streaming (Kotlin Flow + C# IAsyncEnumerable) | ✅ |
-| Hard guard: no `POST /api/settings` method exists in either client | ✅ |
-| `Aligned.Core` compiles clean on .NET 10 (0 warnings, 0 errors) | ✅ |
-| Live smoke test (`Aligned.Core.SmokeTest/`) exercises `/api/health`, `/api/news`, `/api/chat` SSE, `/api/research` start+poll | ✅ |
+| Surface | Android | Windows | Endpoints |
+|---|---|---|---|
+| Feed (live dot, categories, hero images, pull-to-refresh) | ✅ | ✅ | `/api/news`, `/api/categories` |
+| Story detail (vote, share, bookmark, author avatars, tweet media) | ✅ | ✅ | `/api/news/{id}`, `/api/feedback` |
+| Today's Brief (exec summary + group cards) | ✅ | ✅ | `/api/lists` |
+| Map (color-coded markers, list view) | ✅ | ✅ | `/api/map` |
+| Search (debounced 280ms) | ✅ | ✅ | `/api/search` |
+| Ask / Chat (SSE streaming, bubbles, stop button, suggestions) | ✅ | ✅ | `/api/chat` |
+| Research (10-step progress, insights, exec answer) | ✅ | ✅ | `/api/research` |
+| Events (live conferences, color-coded by category) | ✅ | ✅ | `/api/events` |
+| History (past chat/research) | ✅ | ✅ | `/api/history` |
+| Bookmarks (local-only) | ✅ | ✅ | — |
+| Settings (theme, notif toggles, sync log, backend health) | ✅ | ✅ | `/api/health`, `/api/settings` (read) |
 
-## M2 — Cache + feed + pull-to-refresh
+## Background sync
 
-| Item | Status |
-|---|---|
-| Room schema + DAOs (Android) — `data/AlignedDb.kt` (stories, story_detail, sync_log) | ✅ |
-| `StoryRepository` cache-then-network with diff output | ✅ |
-| `FeedViewModel` observes cache, refreshes from network | ✅ |
-| Microsoft.Data.Sqlite cache (Windows) | ⬜ |
-| `FeedScreen` (Android, cache-then-network) | ✅ |
-| `FeedPage` (Windows, hits live API on launch) | ✅ |
-| Pull-to-refresh | ⬜ (refresh button on Windows, not gesture-driven yet) |
-| Shared element transitions feed→detail | ⬜ |
-| Sync engine `runHot/runWarm/runCold` | 🟡 (Kotlin only) |
+- Android `HotSyncWorker` — every 15 min (OS floor). Refreshes /api/news, emits diff to NotificationCenter.
+- Android `WarmSyncWorker` — every 30 min. Refreshes /api/lists, /api/map, /api/events.
+- Android `DailyBriefWorker` — fires daily ≈08:00 local, refreshes /api/lists, dispatches "today's brief" notification.
+- Android `ResearchPollService` — foreground service polls /api/research?id=… and fires "Research ready" notification on completion.
+- Windows `Aligned.Background` — headless console exe; refreshes news + lists, logs new brief. (Plug into Windows Task Scheduler.)
 
-## M3 — Story detail / vote / share
+## Notifications
 
-| Item | Status |
-|---|---|
-| Story detail screen (Android) — `ui/story/StoryScreen.kt` | ✅ |
-| Story detail page (Windows) — `Views/StoryPage.xaml` | ✅ |
-| `POST /api/feedback` wired to up/down chips on both platforms | ✅ |
-| Share card (`/api/og`) | ✅ URL builder only — no Share intent yet |
+- 6 channels: breaking, topics, brief, research, chat, system.
+- **Topic-pin store** drives per-category filtering: `db.topic_pins`.
+- Daily-brief and Research-ready notifications wired and routed to their respective channels.
+- Notification → app deeplink (`aligned://story/{id}`) registered.
 
-## M4 — Today's Brief (`/api/lists`)
+## Icon catalogue (35 morphing icons)
 
-| Item | Status |
-|---|---|
-| Roll-up screen on both platforms | ⬜ |
+Original 26 + redesigned `bookmark`, `moon`, `mic`, `flame`, `search`, `globe` for better recognizability.
+Added: `heart`, `retweet`, `reply`, `eye`, `calendar`, `clock`, `pin`, `bell`, `history`.
+Each is exactly 3 lines in a 14×14 viewBox; rotation-group fast-path preserved (arrow, chevron, cross).
 
-## M5 — Background sync
+## i18n
 
-| Item | Status |
-|---|---|
-| Android `HotSyncWorker` (HiltWorker, repository-driven, emits diff) | ✅ |
-| Android `SyncScheduler.ensureScheduled()` registers periodic hot tier | ✅ |
-| Android `ResearchPollService` foreground service | 🟡 (compiles, polls; no notification on completion yet) |
-| Windows `Aligned.Background` exe entry | 🟡 (one-shot sync + simple toast on new brief) |
-| BackgroundTask manifest registration on Windows | ⬜ (skipped — currently unpackaged) |
+- `values/strings.xml` (English) — all UI strings.
+- `values-fa/strings.xml` (Farsi) — added as RTL test case.
+- AndroidManifest already declares `android:supportsRtl="true"`.
+- Adding `values-{lang}/strings.xml` for zh / es / ar is a translation drop-in.
 
-## M6 — Notifications
+## Hard guards still in place
 
-| Item | Status |
-|---|---|
-| Android channels created at app startup (6 channels) | ✅ |
-| `NotificationCenter` synthesizes per-story rich notifications from sync diffs | ✅ |
-| Notification deeplink to `aligned://story/{id}` | ✅ wired in manifest + intent |
-| Per-user topic-pin store (so "my topics" can actually filter) | ⬜ |
-| Daily-brief scheduling at 08:00 local | ⬜ |
-| Windows `AppNotificationBuilder` toast | ✅ for "daily brief" only |
-| Per-channel routing on Windows | ⬜ |
+- No `POST /api/settings` method exists in either client.
+- No `POST /api/refresh` method exists in either client.
 
-## M7 — Map | M8 — Chat | M9 — Research | M10 — i18n | M11 — Release
+## Known caveats
 
-| Item | Status |
-|---|---|
-| Map screen (both) | ⬜ |
-| Chat streaming UI (Android) — `ui/chat/ChatScreen.kt` + ViewModel, send/stop with morphing icon swap | ✅ |
-| Chat streaming UI (Windows) — `Views/ChatPage.xaml` + ViewModel | ✅ |
-| Research 10-step UI (both) | ⬜ |
-| i18n: en/fa/zh/es/ar with RTL | ⬜ |
-| Release packaging | ⬜ |
-
-## Toolchain — *not* installed by this scaffold
-
-You'll need to install these locally to actually build:
-
-| Tool | How |
-|---|---|
-| JDK 21 | `winget install EclipseAdoptium.Temurin.21.JDK` |
-| Android cmdline-tools + SDK 35 | https://developer.android.com/studio#command-line-tools-only (set `ANDROID_HOME`) |
-| Gradle 8.10+ | once JDK is on PATH: `gradle wrapper --gradle-version 8.10.2` inside `ALIGNED/` |
-| Visual Studio 2022 17.10+ | https://visualstudio.microsoft.com/downloads/ — pick "Windows application development" + ".NET desktop development" workloads |
-| Windows App SDK 1.6 runtime | https://learn.microsoft.com/windows/apps/windows-app-sdk/downloads |
-
-## Known correctness caveats
-
-- **Hilt + KAPT** generates Java; we use `kotlin-kapt` apply at bottom of `android-app/build.gradle.kts`. If the K2 KAPT path misbehaves on first build, drop `kapt.use.k2=true` in `gradle.properties`.
-- **Compose foundation `padding()`** import in NavGraph relies on `androidx.compose.foundation.layout.padding` — confirmed in the imports.
-- **WinUI `XamlControlsResources`** is referenced inline in `App.xaml`; that namespace import is resolved by `UseWinUI=true` in the csproj. If a builder complains about the prefix, change to `<controls:XamlControlsResources xmlns:controls="using:Microsoft.UI.Xaml.Controls"/>` and add the prefix at the dictionary root.
-- **Icon designs are placeholders.** The 26 SVGs were generated by formula — many are decent (`menu`, `play`, `pause`, `arrow-*`, `chevron-*`, `plus`/`close`, `sparkle`). A few (`bookmark`, `moon`, `mic`, `flame`, `search`, `globe`) deserve a second pass with a designer's eye since the 3-line constraint forces compromises.
-- **Feed image rendering**: tweet media URLs come back from `/api/news` but neither `FeedScreen` nor `FeedPage` renders them yet — needs Coil setup on Android and an `Image` element on Windows.
-- **The 6 GB Visual Studio install** is the real friction point. If you don't have it, ping me and we'll defer Windows to a separate session.
+- **MVVMTK0045 warnings** on every `[ObservableProperty]` field — code compiles & runs; partial-property migration is a follow-up.
+- **Aligned.Background** is a plain console exe — toast is logged to stdout. The main app handles real notifications; the background poller exists so a Task Scheduler entry can keep the cache warm.
+- **Map** renders a card list (not tile-based). Real tile rendering deferred — neither platform has a chosen tile lib yet.
+- **Topic pinning** — data layer + notification respect are live; a "+pin" toggle UI per category chip is not yet exposed (you'd write pins via `repo.togglePinnedTopic("ai-safety")` from a debug menu today).

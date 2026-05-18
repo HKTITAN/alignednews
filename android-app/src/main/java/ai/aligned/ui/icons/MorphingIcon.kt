@@ -44,60 +44,110 @@ data class IconSpec(
     val rotationDeg: Float = 0f
 ) { init { require(lines.size == 3) { "icon $id must have exactly 3 lines" } } }
 
-/** Catalogue of the 26 ALIGNED icons. Generated from `design/icons/`. */
+/** Catalogue of the ALIGNED icons. Generated from `design/icons/`. */
 object MorphingIcons {
 
-    private fun line(x1: Int, y1: Int, x2: Int, y2: Int): IconLine =
-        if (x1 == 7 && y1 == 7 && x2 == 7 && y2 == 7) IconLine.Collapsed
-        else IconLine(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat())
+    private fun line(x1: Number, y1: Number, x2: Number, y2: Number): IconLine {
+        val a = x1.toFloat(); val b = y1.toFloat()
+        val c = x2.toFloat(); val d = y2.toFloat()
+        return if (a == 7f && b == 7f && c == 7f && d == 7f) IconLine.Collapsed
+        else IconLine(a, b, c, d)
+    }
 
+    // ── arrows (rotation group) ─────────────────────────────────────────────
     val arrowUp    = IconSpec("arrow-up",    listOf(line(7,12,7,2),  line(3,6,7,2),   line(7,2,11,6)),  "arrow",   0f)
     val arrowRight = IconSpec("arrow-right", listOf(line(7,12,7,2),  line(3,6,7,2),   line(7,2,11,6)),  "arrow",  90f)
     val arrowDown  = IconSpec("arrow-down",  listOf(line(7,12,7,2),  line(3,6,7,2),   line(7,2,11,6)),  "arrow", 180f)
     val arrowLeft  = IconSpec("arrow-left",  listOf(line(7,12,7,2),  line(3,6,7,2),   line(7,2,11,6)),  "arrow", 270f)
 
+    // ── chevrons (rotation group) ───────────────────────────────────────────
     val chevronUp    = IconSpec("chevron-up",    listOf(line(3,9,7,5),   line(7,5,11,9), line(7,7,7,7)), "chevron",   0f)
     val chevronRight = IconSpec("chevron-right", listOf(line(3,9,7,5),   line(7,5,11,9), line(7,7,7,7)), "chevron",  90f)
     val chevronDown  = IconSpec("chevron-down",  listOf(line(3,9,7,5),   line(7,5,11,9), line(7,7,7,7)), "chevron", 180f)
     val chevronLeft  = IconSpec("chevron-left",  listOf(line(3,9,7,5),   line(7,5,11,9), line(7,7,7,7)), "chevron", 270f)
 
+    // ── cross (rotation group) ──────────────────────────────────────────────
     val plus  = IconSpec("plus",  listOf(line(2,7,12,7),  line(7,2,7,12),  line(7,7,7,7)), "cross",  0f)
     val close = IconSpec("close", listOf(line(2,7,12,7),  line(7,2,7,12),  line(7,7,7,7)), "cross", 45f)
 
+    // ── singletons ──────────────────────────────────────────────────────────
     val menu     = IconSpec("menu",     listOf(line(2,4,12,4),  line(2,7,12,7),  line(2,10,12,10)))
     val check    = IconSpec("check",    listOf(line(2,8,6,12),  line(6,12,12,3), line(7,7,7,7)))
-    val search   = IconSpec("search",   listOf(line(5,3,5,9),   line(3,6,7,6),   line(7,8,12,12)))
-    val settings = IconSpec("settings", listOf(line(2,3,12,3),  line(2,7,12,7),  line(2,11,12,11)))
+
+    // Search: magnifier circle silhouette (top arc + left arc) + handle.
+    val search   = IconSpec("search",   listOf(line(3,3,9,3),   line(3,3,3,9),   line(7,7,12,12)))
+
+    // Settings: 3 sliders (vertical thumbs at different positions).
+    val settings = IconSpec("settings", listOf(line(4,2,4,8),   line(7,5,7,12),  line(10,2,10,10)))
+
     val share    = IconSpec("share",    listOf(line(7,12,7,2),  line(3,5,7,2),   line(7,2,11,5)))
-    val bookmark = IconSpec("bookmark", listOf(line(4,2,10,2),  line(4,2,4,12),  line(10,2,10,10)))
+
+    // Bookmark: classic ribbon — left edge, right edge, bottom V.
+    val bookmark = IconSpec("bookmark", listOf(line(4,2,4,12),  line(10,2,10,12), line(4,12,10,12)))
+
     val play     = IconSpec("play",     listOf(line(4,3,4,11),  line(4,3,11,7),  line(4,11,11,7)))
     val pause    = IconSpec("pause",    listOf(line(5,3,5,11),  line(9,3,9,11),  line(7,7,7,7)))
+
+    // Sun: cross + diagonal rays.
     val sun      = IconSpec("sun",      listOf(line(2,7,12,7),  line(7,2,7,12),  line(4,4,10,10)))
-    val moon     = IconSpec("moon",     listOf(line(5,3,5,11),  line(5,3,9,4),   line(5,11,9,10)))
+
+    // Moon: crescent approximated by two parallel arcs (two diagonals + bottom).
+    val moon     = IconSpec("moon",     listOf(line(9,3,5,7),   line(5,7,9,11),  line(9,3,11,7)))
+
     val refresh  = IconSpec("refresh",  listOf(line(3,4,11,4),  line(11,4,11,10),line(11,10,7,10)))
     val sparkle  = IconSpec("sparkle",  listOf(line(7,1,7,13),  line(1,7,13,7),  line(7,7,7,7)))
-    val mic      = IconSpec("mic",      listOf(line(7,2,7,9),   line(4,12,10,12),line(7,9,7,12)))
+
+    // Mic: vertical capsule (left + right edges) + base bar.
+    val mic      = IconSpec("mic",      listOf(line(5,3,5,9),   line(9,3,9,9),   line(4,12,10,12)))
+
     val send     = IconSpec("send",     listOf(line(3,4,12,7),  line(3,10,12,7), line(3,7,8,7)))
-    val flame    = IconSpec("flame",    listOf(line(5,12,7,3),  line(9,12,7,3),  line(5,12,9,12)))
-    val globe    = IconSpec("globe",    listOf(line(7,2,7,12),  line(3,4,11,4),  line(3,10,11,10)))
+
+    // Flame: classic teardrop — left curl, right curl, base.
+    val flame    = IconSpec("flame",    listOf(line(4,12,7,3),  line(10,12,7,3), line(4,12,10,12)))
+
+    // Globe: equator + meridian + tropic.
+    val globe    = IconSpec("globe",    listOf(line(2,7,12,7),  line(7,2,7,12),  line(3,4,11,4)))
+
+    // ── added in v0.2 ───────────────────────────────────────────────────────
+
+    // Heart: two top arcs + bottom point.
+    val heart    = IconSpec("heart",    listOf(line(3,5,7,9),   line(11,5,7,9),  line(2,7,12,7)))
+
+    // Retweet: two arrows looping (top-right, bottom-left).
+    val retweet  = IconSpec("retweet",  listOf(line(2,4,12,4),  line(10,2,12,4), line(2,10,4,12)))
+
+    // Reply / comment: arrow-back + speech body.
+    val reply    = IconSpec("reply",    listOf(line(2,7,6,3),   line(2,7,6,11),  line(2,7,12,7)))
+
+    // Eye: top lid + bottom lid + pupil dot (line of length 0 visible).
+    val eye      = IconSpec("eye",      listOf(line(2,7,12,7),  line(4,4,10,10), line(7,5,7,9)))
+
+    // Calendar: top bar + left bar + right bar (frame).
+    val calendar = IconSpec("calendar", listOf(line(2,4,12,4),  line(2,4,2,12),  line(12,4,12,12)))
+
+    // Clock: hour hand + minute hand + frame top.
+    val clock    = IconSpec("clock",    listOf(line(7,7,7,3),   line(7,7,10,7),  line(2,7,12,7)))
+
+    // Pin: shaft + head + base.
+    val pin      = IconSpec("pin",      listOf(line(7,2,7,12),  line(4,5,10,5),  line(5,8,9,8)))
+
+    // Bell: dome (two diagonals) + clapper.
+    val bell     = IconSpec("bell",     listOf(line(4,10,7,3),  line(10,10,7,3), line(4,10,10,10)))
+
+    // History: clockwise arrow + center dot.
+    val history  = IconSpec("history",  listOf(line(2,7,7,2),   line(7,2,12,7),  line(7,7,7,7)))
 
     val all = listOf(
         arrowUp, arrowRight, arrowDown, arrowLeft,
         chevronUp, chevronRight, chevronDown, chevronLeft,
         plus, close,
         menu, check, search, settings, share, bookmark, play, pause,
-        sun, moon, refresh, sparkle, mic, send, flame, globe
+        sun, moon, refresh, sparkle, mic, send, flame, globe,
+        heart, retweet, reply, eye, calendar, clock, pin, bell, history
     )
     fun byId(id: String): IconSpec = all.first { it.id == id }
 }
 
-/**
- * Animated icon. Pass any [IconSpec] in; the composable will morph from the
- * previously-displayed spec to the new one with a spring.
- *
- * Rotation-group fast path: if old.rotationGroup == new.rotationGroup, only the
- * rotation animates, lines stay still.
- */
 @Composable
 fun MorphingIcon(
     spec: IconSpec,
@@ -106,7 +156,6 @@ fun MorphingIcon(
     color: Color = AlignedTokens.colors.text,
     strokeWidth: Dp = 2.dp
 ) {
-    // Animatables for each of 3 lines × 4 coords, plus rotation
     val x1 = remember(spec.id) { spec.lines.map { Animatable(it.x1) } }
     val y1 = remember(spec.id) { spec.lines.map { Animatable(it.y1) } }
     val x2 = remember(spec.id) { spec.lines.map { Animatable(it.x2) } }
@@ -120,7 +169,6 @@ fun MorphingIcon(
         val prev = previous
         val sameGroup = prev != null && prev.rotationGroup != null && prev.rotationGroup == spec.rotationGroup
         if (sameGroup) {
-            // Rotate by shortest arc
             val current = rotation.value
             val target  = shortestRotation(current, spec.rotationDeg)
             scope.launch {
@@ -130,7 +178,6 @@ fun MorphingIcon(
                 )
             }
         } else {
-            // Cross-group morph: animate every endpoint + opacity, snap rotation
             rotation.snapTo(spec.rotationDeg)
             val springSpec = spring<Float>(Tokens.Motion.IconSpringDamping, Tokens.Motion.IconSpringStiffness)
             spec.lines.forEachIndexed { i, line ->
@@ -168,7 +215,6 @@ fun MorphingIcon(
     }
 }
 
-/** Return target in degrees so that rotating from [from] to [target] takes the shortest arc. */
 private fun shortestRotation(from: Float, targetRaw: Float): Float {
     var delta = ((targetRaw - from) % 360f + 540f) % 360f - 180f
     return from + delta

@@ -198,21 +198,32 @@ public static class MorphingIcons
     public static readonly IconSpec Plus  = IconSpec.Make("plus",  new[]{new[]{2,7,12,7}, new[]{7,2,7,12}, new[]{7,7,7,7}}, "cross",  0);
     public static readonly IconSpec Close = IconSpec.Make("close", new[]{new[]{2,7,12,7}, new[]{7,2,7,12}, new[]{7,7,7,7}}, "cross", 45);
 
-    // singletons
+    // singletons (matches android-app/src/main/java/ai/aligned/ui/icons/MorphingIcon.kt)
     public static readonly IconSpec Menu     = IconSpec.Make("menu",     new[]{new[]{2,4,12,4},  new[]{2,7,12,7},  new[]{2,10,12,10}});
     public static readonly IconSpec Check    = IconSpec.Make("check",    new[]{new[]{2,8,6,12},  new[]{6,12,12,3}, new[]{7,7,7,7}});
-    public static readonly IconSpec Search   = IconSpec.Make("search",   new[]{new[]{5,3,5,9},   new[]{3,6,7,6},   new[]{7,8,12,12}});
-    public static readonly IconSpec Settings = IconSpec.Make("settings", new[]{new[]{2,3,12,3},  new[]{2,7,12,7},  new[]{2,11,12,11}});
+    public static readonly IconSpec Search   = IconSpec.Make("search",   new[]{new[]{3,3,9,3},   new[]{3,3,3,9},   new[]{7,7,12,12}});
+    public static readonly IconSpec Settings = IconSpec.Make("settings", new[]{new[]{4,2,4,8},   new[]{7,5,7,12},  new[]{10,2,10,10}});
     public static readonly IconSpec Share    = IconSpec.Make("share",    new[]{new[]{7,12,7,2},  new[]{3,5,7,2},   new[]{7,2,11,5}});
-    public static readonly IconSpec Bookmark = IconSpec.Make("bookmark", new[]{new[]{4,2,10,2},  new[]{4,2,4,12},  new[]{10,2,10,10}});
+    public static readonly IconSpec Bookmark = IconSpec.Make("bookmark", new[]{new[]{4,2,4,12},  new[]{10,2,10,12},new[]{4,12,10,12}});
     public static readonly IconSpec Play     = IconSpec.Make("play",     new[]{new[]{4,3,4,11},  new[]{4,3,11,7},  new[]{4,11,11,7}});
     public static readonly IconSpec Pause    = IconSpec.Make("pause",    new[]{new[]{5,3,5,11},  new[]{9,3,9,11},  new[]{7,7,7,7}});
     public static readonly IconSpec Sun      = IconSpec.Make("sun",      new[]{new[]{2,7,12,7},  new[]{7,2,7,12},  new[]{4,4,10,10}});
-    public static readonly IconSpec Moon     = IconSpec.Make("moon",     new[]{new[]{5,3,5,11},  new[]{5,3,9,4},   new[]{5,11,9,10}});
+    public static readonly IconSpec Moon     = IconSpec.Make("moon",     new[]{new[]{9,3,5,7},   new[]{5,7,9,11},  new[]{9,3,11,7}});
     public static readonly IconSpec Refresh  = IconSpec.Make("refresh",  new[]{new[]{3,4,11,4},  new[]{11,4,11,10},new[]{11,10,7,10}});
     public static readonly IconSpec Sparkle  = IconSpec.Make("sparkle",  new[]{new[]{7,1,7,13},  new[]{1,7,13,7},  new[]{7,7,7,7}});
-    public static readonly IconSpec Mic      = IconSpec.Make("mic",      new[]{new[]{7,2,7,9},   new[]{4,12,10,12},new[]{7,9,7,12}});
+    public static readonly IconSpec Mic      = IconSpec.Make("mic",      new[]{new[]{5,3,5,9},   new[]{9,3,9,9},   new[]{4,12,10,12}});
     public static readonly IconSpec Send     = IconSpec.Make("send",     new[]{new[]{3,4,12,7},  new[]{3,10,12,7}, new[]{3,7,8,7}});
-    public static readonly IconSpec Flame    = IconSpec.Make("flame",    new[]{new[]{5,12,7,3},  new[]{9,12,7,3},  new[]{5,12,9,12}});
-    public static readonly IconSpec Globe    = IconSpec.Make("globe",    new[]{new[]{7,2,7,12},  new[]{3,4,11,4},  new[]{3,10,11,10}});
+    public static readonly IconSpec Flame    = IconSpec.Make("flame",    new[]{new[]{4,12,7,3},  new[]{10,12,7,3}, new[]{4,12,10,12}});
+    public static readonly IconSpec Globe    = IconSpec.Make("globe",    new[]{new[]{2,7,12,7},  new[]{7,2,7,12},  new[]{3,4,11,4}});
+
+    // v0.2 additions
+    public static readonly IconSpec Heart    = IconSpec.Make("heart",    new[]{new[]{3,5,7,9},   new[]{11,5,7,9},  new[]{2,7,12,7}});
+    public static readonly IconSpec Retweet  = IconSpec.Make("retweet",  new[]{new[]{2,4,12,4},  new[]{10,2,12,4}, new[]{2,10,4,12}});
+    public static readonly IconSpec Reply    = IconSpec.Make("reply",    new[]{new[]{2,7,6,3},   new[]{2,7,6,11},  new[]{2,7,12,7}});
+    public static readonly IconSpec Eye      = IconSpec.Make("eye",      new[]{new[]{2,7,12,7},  new[]{4,4,10,10}, new[]{7,5,7,9}});
+    public static readonly IconSpec Calendar = IconSpec.Make("calendar", new[]{new[]{2,4,12,4},  new[]{2,4,2,12},  new[]{12,4,12,12}});
+    public static readonly IconSpec Clock    = IconSpec.Make("clock",    new[]{new[]{7,7,7,3},   new[]{7,7,10,7},  new[]{2,7,12,7}});
+    public static readonly IconSpec Pin      = IconSpec.Make("pin",      new[]{new[]{7,2,7,12},  new[]{4,5,10,5},  new[]{5,8,9,8}});
+    public static readonly IconSpec Bell     = IconSpec.Make("bell",     new[]{new[]{4,10,7,3},  new[]{10,10,7,3}, new[]{4,10,10,10}});
+    public static readonly IconSpec History  = IconSpec.Make("history",  new[]{new[]{2,7,7,2},   new[]{7,2,12,7},  new[]{7,7,7,7}});
 }

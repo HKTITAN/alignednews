@@ -10,44 +10,111 @@
         <vm:ChatViewModel/>
     </Page.DataContext>
 
-    <Grid Padding="20" RowSpacing="12">
+    <Grid Padding="{StaticResource AlignedPaddingScreen}" RowSpacing="12">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0">
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <StackLayout Spacing="12"/>
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ChatMessage">
-                        <Border Background="{ThemeResource AlignedElev1}"
-                                CornerRadius="{StaticResource AlignedCardCorner}"
-                                Padding="14,10"
-                                HorizontalAlignment="Stretch">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="{x:Bind Role, Mode=OneWay}"
-                                           FontSize="11" FontWeight="Medium"
-                                           Foreground="{ThemeResource AlignedTextSecondary}"/>
-                                <TextBlock Text="{x:Bind Content, Mode=OneWay}"
-                                           FontSize="15" LineHeight="22"
-                                           TextWrapping="Wrap"
-                                           Foreground="{ThemeResource AlignedText}"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-        </ScrollViewer>
+        <!-- Header -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Spacing="2">
+                <TextBlock Text="Ask" Style="{StaticResource AlignedDisplayMd}"
+                           Foreground="{ThemeResource AlignedText}"/>
+                <TextBlock Text="{x:Bind ViewModel.SubtitleLine, Mode=OneWay}"
+                           Style="{StaticResource AlignedFootnote}"
+                           Foreground="{ThemeResource AlignedTextSecondary}"/>
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Command="{x:Bind ViewModel.ClearCommand}"
+                    Visibility="{x:Bind ViewModel.ClearVisibility, Mode=OneWay}"
+                    Background="Transparent" BorderThickness="0"
+                    Padding="10" CornerRadius="{StaticResource AlignedTapCorner}"
+                    ToolTipService.ToolTip="Clear chat">
+                <ctl:MorphingIcon Width="18" Height="18"
+                                  Spec="{x:Bind ctl:MorphingIcons.Close}"
+                                  IconBrush="{ThemeResource AlignedText}"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <!-- Empty -->
+            <StackPanel Visibility="{x:Bind ViewModel.EmptyVisibility, Mode=OneWay}"
+                        VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                        MaxWidth="640" Spacing="20">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Ask anything about today's news."
+                               FontFamily="{StaticResource AlignedFontDisplay}"
+                               FontSize="22" FontWeight="SemiBold" LineHeight="28"
+                               Foreground="{ThemeResource AlignedText}"/>
+                    <TextBlock Text="Answers stream token-by-token from the live feed."
+                               Style="{StaticResource AlignedBody}"
+                               Foreground="{ThemeResource AlignedTextSecondary}"/>
+                </StackPanel>
+                <ItemsControl ItemsSource="{x:Bind ViewModel.Suggestions, Mode=OneWay}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Spacing="8"/></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SuggestionItem">
+                            <Button Command="{x:Bind PickCommand}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Background="{ThemeResource AlignedElev1}"
+                                    BorderThickness="0"
+                                    CornerRadius="{StaticResource AlignedCardCorner}"
+                                    Padding="14,12">
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <ctl:MorphingIcon Width="14" Height="14"
+                                                      Spec="{x:Bind ctl:MorphingIcons.Sparkle}"
+                                                      IconBrush="{ThemeResource AlignedTextSecondary}"/>
+                                    <TextBlock Text="{x:Bind Text}"
+                                               Foreground="{ThemeResource AlignedText}" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Messages -->
+            <ScrollViewer x:Name="MessagesScroll"
+                          Visibility="{x:Bind ViewModel.ListVisibility, Mode=OneWay}"
+                          VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="10"/>
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ChatMessage">
+                            <Grid>
+                                <Border Background="{x:Bind BubbleBrush, Mode=OneWay}"
+                                        CornerRadius="{x:Bind BubbleCorner, Mode=OneWay}"
+                                        Padding="14,10"
+                                        MaxWidth="540"
+                                        HorizontalAlignment="{x:Bind BubbleAlignment, Mode=OneWay}">
+                                    <TextBlock Text="{x:Bind Content, Mode=OneWay}"
+                                               Foreground="{x:Bind BubbleTextBrush, Mode=OneWay}"
+                                               FontSize="15" LineHeight="22"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
 
         <!-- Composer -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Background="{ThemeResource AlignedElev1}"
-                CornerRadius="{StaticResource AlignedCardCorner}"
-                Padding="12,8" BorderThickness="1"
-                BorderBrush="{ThemeResource AlignedSeparator}">
+                CornerRadius="28"
+                Padding="14,8">
             <Grid ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -55,20 +122,22 @@
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0"
                          Text="{x:Bind ViewModel.Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         PlaceholderText="Ask anything about today's news..."
+                         PlaceholderText="Ask anything about today's news…"
                          BorderThickness="0"
                          Background="Transparent"
                          FontSize="15"
+                         VerticalAlignment="Center"
+                         KeyDown="OnComposerKeyDown"
                          AcceptsReturn="False"/>
                 <Button Grid.Column="1"
-                        Command="{x:Bind ViewModel.SendCommand}"
-                        Background="{ThemeResource AlignedAccent}"
+                        Click="OnSendClick"
+                        Background="{x:Bind ViewModel.SendButtonBrush, Mode=OneWay}"
                         BorderThickness="0"
                         CornerRadius="100"
-                        Padding="12,8">
-                    <ctl:MorphingIcon Width="16" Height="16"
-                                      Spec="{x:Bind ctl:MorphingIcons.Send}"
-                                      IconBrush="White"/>
+                        Padding="10">
+                    <ctl:MorphingIcon Width="18" Height="18"
+                                      Spec="{x:Bind ViewModel.SendIcon, Mode=OneWay}"
+                                      IconBrush="{x:Bind ViewModel.SendIconBrush, Mode=OneWay}"/>
                 </Button>
             </Grid>
         </Border>

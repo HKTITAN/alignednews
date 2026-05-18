@@ -1,0 +1,86 @@
+<Page
+    x:Class="Aligned.App.Views.BriefPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Aligned.App.ViewModels"
+    Background="{ThemeResource AlignedBg}">
+
+    <Page.DataContext>
+        <vm:BriefViewModel/>
+    </Page.DataContext>
+
+    <Grid Padding="{StaticResource AlignedPaddingScreen}" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="2">
+            <TextBlock Text="Today's Brief" Style="{StaticResource AlignedDisplayMd}"
+                       Foreground="{ThemeResource AlignedText}"/>
+            <TextBlock Text="{x:Bind ViewModel.DateLabel, Mode=OneWay}"
+                       Style="{StaticResource AlignedFootnote}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                          Visibility="{x:Bind ViewModel.LoadingVisibility, Mode=OneWay}"
+                          Width="28" Height="28"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Foreground="{ThemeResource AlignedText}"/>
+            <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                       Visibility="{x:Bind ViewModel.ErrorVisibility, Mode=OneWay}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{ThemeResource AlignedDestructive}"
+                       Style="{StaticResource AlignedFootnote}"/>
+            <ScrollViewer Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}">
+                <StackPanel Spacing="12" Padding="0,0,4,40">
+                    <Border Style="{StaticResource AlignedCardBorder}"
+                            Visibility="{x:Bind ViewModel.SummaryVisibility, Mode=OneWay}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="EXECUTIVE SUMMARY"
+                                       Style="{StaticResource AlignedCaption}"
+                                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+                            <TextBlock Text="{x:Bind ViewModel.ExecSummary, Mode=OneWay}"
+                                       Style="{StaticResource AlignedBody}"
+                                       Foreground="{ThemeResource AlignedText}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.Groups, Mode=OneWay}">
+                        <ItemsRepeater.Layout>
+                            <StackLayout Spacing="12"/>
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BriefGroupVm">
+                                <Border Style="{StaticResource AlignedCardBorder}">
+                                    <StackPanel Spacing="8">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Ellipse Width="10" Height="10">
+                                                <Ellipse.Fill>
+                                                    <SolidColorBrush Color="{x:Bind DotColor}"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <TextBlock Text="{x:Bind Name}"
+                                                       Style="{StaticResource AlignedTitleSm}"
+                                                       Foreground="{ThemeResource AlignedText}"/>
+                                            <TextBlock Text="{x:Bind CountLabel}"
+                                                       Foreground="{ThemeResource AlignedTextTertiary}" FontSize="12"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{x:Bind Summary}"
+                                                   Foreground="{ThemeResource AlignedTextSecondary}"
+                                                   FontSize="14" LineHeight="20"
+                                                   TextWrapping="Wrap"
+                                                   MaxLines="6"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>

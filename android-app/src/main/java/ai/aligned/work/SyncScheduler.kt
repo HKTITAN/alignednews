@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 object SyncScheduler {
@@ -23,7 +24,24 @@ object SyncScheduler {
             .build()
         wm.enqueueUniquePeriodicWork("hot-sync", ExistingPeriodicWorkPolicy.KEEP, hot)
 
-        // Warm + cold scaffolds — real workers land in M5
-        // Left intentionally empty so we don't burn user battery before they're useful.
+        // Warm — every 30 min, refreshes lists/map/events caches
+        val warm = PeriodicWorkRequestBuilder<WarmSyncWorker>(30, TimeUnit.MINUTES)
+            .setConstraints(netConnected)
+            .build()
+        wm.enqueueUniquePeriodicWork("warm-sync", ExistingPeriodicWorkPolicy.KEEP, warm)
+
+        // Daily brief — fires once every 24h, aimed at 08:00 local.
+        // The OS won't honor an exact time but the initial delay aligns the next run.
+        val now = Calendar.getInstance()
+        val target = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 8); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0)
+            if (timeInMillis <= now.timeInMillis) add(Calendar.DAY_OF_YEAR, 1)
+        }
+        val initialDelay = target.timeInMillis - now.timeInMillis
+        val brief = PeriodicWorkRequestBuilder<DailyBriefWorker>(24, TimeUnit.HOURS)
+            .setConstraints(netConnected)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .build()
+        wm.enqueueUniquePeriodicWork("daily-brief", ExistingPeriodicWorkPolicy.UPDATE, brief)
     }
 }

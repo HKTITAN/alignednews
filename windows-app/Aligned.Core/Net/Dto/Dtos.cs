@@ -72,6 +72,12 @@ public class StoryDto
     public string UpdatedAt { get; set; } = "";
     public int TweetCount { get; set; }
     public long TotalEngagement { get; set; }
+
+    /// <summary>First photo URL across the story's tweets, or empty string. UI convenience.</summary>
+    public string HeroImageUrl =>
+        Tweets?.SelectMany(t => t.Media ?? new())
+               .FirstOrDefault(m => string.Equals(m.Type, "photo", StringComparison.OrdinalIgnoreCase))
+               ?.Url ?? "";
 }
 
 public class TweetDto

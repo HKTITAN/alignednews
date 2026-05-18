@@ -1,0 +1,76 @@
+<Page
+    x:Class="Aligned.App.Views.BookmarksPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Aligned.App.ViewModels"
+    xmlns:dto="using:Aligned.Core.Net.Dto"
+    xmlns:ctl="using:Aligned.App.Controls"
+    Background="{ThemeResource AlignedBg}">
+
+    <Page.DataContext>
+        <vm:BookmarksViewModel/>
+    </Page.DataContext>
+
+    <Grid Padding="{StaticResource AlignedPaddingScreen}" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="2">
+            <TextBlock Text="Bookmarks" Style="{StaticResource AlignedDisplayMd}"
+                       Foreground="{ThemeResource AlignedText}"/>
+            <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}"
+                       Style="{StaticResource AlignedFootnote}"
+                       Foreground="{ThemeResource AlignedTextSecondary}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8"
+                        Visibility="{x:Bind ViewModel.EmptyVisibility, Mode=OneWay}">
+                <ctl:MorphingIcon Width="32" Height="32" HorizontalAlignment="Center"
+                                  Spec="{x:Bind ctl:MorphingIcons.Bookmark}"
+                                  IconBrush="{ThemeResource AlignedTextTertiary}"/>
+                <TextBlock Text="Tap the bookmark icon on any story to save it here."
+                           HorizontalAlignment="Center"
+                           Foreground="{ThemeResource AlignedTextSecondary}"
+                           Style="{StaticResource AlignedFootnote}"/>
+            </StackPanel>
+            <ScrollViewer Visibility="{x:Bind ViewModel.ListVisibility, Mode=OneWay}">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" Margin="0,0,4,40">
+                    <ItemsRepeater.Layout><StackLayout Spacing="10"/></ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="dto:StoryDto">
+                            <Button HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Background="{ThemeResource AlignedElev1}"
+                                    BorderThickness="0"
+                                    CornerRadius="{StaticResource AlignedCardCorner}"
+                                    Padding="14"
+                                    Click="OnStoryClick"
+                                    Tag="{x:Bind Id}">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Ellipse Width="8" Height="8">
+                                            <Ellipse.Fill>
+                                                <SolidColorBrush Color="{x:Bind vm:FeedViewModel.CategoryColor(Category)}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <TextBlock Text="{x:Bind vm:FeedViewModel.PrettyCategory(Category)}"
+                                                   Style="{StaticResource AlignedCaption}"
+                                                   Foreground="{ThemeResource AlignedTextSecondary}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind Headline}"
+                                               FontFamily="{StaticResource AlignedFontDisplay}"
+                                               FontSize="16" FontWeight="SemiBold"
+                                               TextWrapping="Wrap" MaxLines="3"
+                                               Foreground="{ThemeResource AlignedText}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>
