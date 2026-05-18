@@ -112,7 +112,7 @@ private fun ChatHeader(streaming: Boolean, onClear: () -> Unit, canClear: Boolea
 }
 
 @Composable
-private fun EmptyChat(onSuggest: (String) -> Unit) {
+private fun ColumnScope.EmptyChat(onSuggest: (String) -> Unit) {
     val c = AlignedTokens.colors
     val prompts = remember {
         listOf(
