@@ -26,19 +26,19 @@ fun AlignedTheme(
     content: @Composable () -> Unit
 ) {
     val c = if (dark) AlignedColors(
-        bg = Tokens.Color.darkBg, surface = Tokens.Color.darkSurface,
-        elev1 = Tokens.Color.darkElev1, elev2 = Tokens.Color.darkElev2,
-        text = Tokens.Color.darkText, textSecondary = Tokens.Color.darkTextSecondary,
-        textTertiary = Tokens.Color.darkTextTertiary,
-        separator = Tokens.Color.darkSeparator,
-        accent = Tokens.Color.accent, destructive = Tokens.Color.destructive
+        bg = Tokens.Palette.darkBg, surface = Tokens.Palette.darkSurface,
+        elev1 = Tokens.Palette.darkElev1, elev2 = Tokens.Palette.darkElev2,
+        text = Tokens.Palette.darkText, textSecondary = Tokens.Palette.darkTextSecondary,
+        textTertiary = Tokens.Palette.darkTextTertiary,
+        separator = Tokens.Palette.darkSeparator,
+        accent = Tokens.Palette.accent, destructive = Tokens.Palette.destructive
     ) else AlignedColors(
-        bg = Tokens.Color.lightBg, surface = Tokens.Color.lightSurface,
-        elev1 = Tokens.Color.lightElev1, elev2 = Tokens.Color.lightElev2,
-        text = Tokens.Color.lightText, textSecondary = Tokens.Color.lightTextSecondary,
-        textTertiary = Tokens.Color.lightTextTertiary,
-        separator = Tokens.Color.lightSeparator,
-        accent = Tokens.Color.accent, destructive = Tokens.Color.destructive
+        bg = Tokens.Palette.lightBg, surface = Tokens.Palette.lightSurface,
+        elev1 = Tokens.Palette.lightElev1, elev2 = Tokens.Palette.lightElev2,
+        text = Tokens.Palette.lightText, textSecondary = Tokens.Palette.lightTextSecondary,
+        textTertiary = Tokens.Palette.lightTextTertiary,
+        separator = Tokens.Palette.lightSeparator,
+        accent = Tokens.Palette.accent, destructive = Tokens.Palette.destructive
     )
 
     val m3 = if (dark)

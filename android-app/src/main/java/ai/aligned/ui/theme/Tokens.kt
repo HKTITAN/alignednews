@@ -3,13 +3,12 @@ package ai.aligned.ui.theme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
- * Hand-mirrored from design/tokens.json. Keep in sync — the JSON is canonical.
+ * Hand-mirrored from `design/tokens.json`. Keep in sync — the JSON is canonical.
  */
 object Tokens {
-    object Color {
+    object Palette {
         // Light
         val lightBg            = Color(0xFFFFFFFF)
         val lightSurface       = Color(0xFFF5F5F7)
@@ -83,7 +82,5 @@ object Tokens {
         "world-models" to Color(0xFF2DD4BF), "xai-news"     to Color(0xFF1D4ED8),
         "quantum"      to Color(0xFF7C3AED), "dev-tools"    to Color(0xFF0891B2)
     )
-    fun categoryColor(id: String): Color = CategoryFallback[id] ?: Color.accent
+    fun categoryColor(id: String): Color = CategoryFallback[id] ?: Palette.accent
 }
-
-private val androidx.compose.ui.graphics.Color.Companion.accent get() = Color(0xFF0A84FF)

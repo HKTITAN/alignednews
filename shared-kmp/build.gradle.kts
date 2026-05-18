@@ -14,13 +14,14 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.neg)
-            implementation(libs.ktor.serialization.json)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
+            // `api` so the android-app module sees these transitively
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.content.neg)
+            api(libs.ktor.serialization.json)
+            api(libs.ktor.client.logging)
+            api(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.datetime)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
