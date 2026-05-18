@@ -60,6 +60,7 @@ class ChatViewModel @Inject constructor(
                                 st.copy(messages = msgs)
                             }
                         }
+                        is ChatEvent.Citations -> Unit
                         ChatEvent.Done -> Unit
                     }
                 }

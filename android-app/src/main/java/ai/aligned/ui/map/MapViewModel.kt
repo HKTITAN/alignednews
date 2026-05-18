@@ -13,10 +13,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class UiMarker(
+    val id: String,
+    val lat: Double,
+    val lng: Double,
     val city: String, val country: String,
     val groupId: String, val groupName: String,
     val color: Color,
-    val headlines: List<String>
+    val headlines: List<String>,
+    val storyLinks: List<String>
 )
 
 sealed interface MapState {
@@ -41,10 +45,14 @@ class MapViewModel @Inject constructor(
                 .onSuccess { dto ->
                     val ui = dto.markers.map { m ->
                         UiMarker(
+                            id = "${m.city}-${m.country}-${m.groupId}-${m.lat}-${m.lng}",
+                            lat = m.lat,
+                            lng = m.lng,
                             city = m.city, country = m.country,
                             groupId = m.groupId, groupName = m.groupName,
                             color = parseHex(m.groupColor) ?: Tokens.categoryColor(m.groupId),
-                            headlines = m.stories.map { it.headline }
+                            headlines = m.stories.map { it.headline },
+                            storyLinks = m.stories.map { it.tweetUrl }
                         )
                     }
                     _state.value = MapState.Ready(ui)

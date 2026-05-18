@@ -49,7 +49,7 @@ import kotlinx.serialization.json.JsonObject
     val tweetCount: Int = 0, val totalEngagement: Long = 0,
     val signals: Signals? = null
 ) { @Serializable data class Signals(
-        val topScore: Int = 0,
+        val topScore: Double = 0.0,
         val categories: List<String> = emptyList(),
         val flags: JsonObject = JsonObject(emptyMap())
    )
@@ -67,7 +67,7 @@ import kotlinx.serialization.json.JsonObject
     val media: List<TweetMedia> = emptyList()
 )
 @Serializable data class TweetMedia(
-    val type: String, val url: String,
+    val type: String = "unknown", val url: String = "",
     val width: Int = 0, val height: Int = 0
 )
 
@@ -182,6 +182,8 @@ import kotlinx.serialization.json.JsonObject
 @Serializable sealed class ChatEvent {
     @Serializable @SerialName("token")
     data class Token(val text: String) : ChatEvent()
+    @Serializable @SerialName("citations")
+    data class Citations(val data: JsonElement? = null) : ChatEvent()
     @Serializable @SerialName("done")
     object Done : ChatEvent()
 }

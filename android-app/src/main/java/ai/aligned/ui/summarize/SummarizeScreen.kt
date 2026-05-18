@@ -158,7 +158,7 @@ private fun Composer(text: String, loading: Boolean, onText: (String) -> Unit, o
         MorphingIcon(MorphingIcons.share, size = 16.dp, color = c.textSecondary)
         Box(modifier = Modifier.weight(1f)) {
             if (text.isEmpty()) Text(
-                "https://x.com/…/status/…",
+                "https://x.com/…/status/… or tweet ID",
                 color = c.textTertiary, fontSize = 15.sp
             )
             BasicTextField(
@@ -186,7 +186,7 @@ private fun Composer(text: String, loading: Boolean, onText: (String) -> Unit, o
 private fun Hint() {
     val c = AlignedTokens.colors
     Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-        Text("Paste a tweet link to summarize the whole thread.",
+        Text("Paste a tweet link (or tweet ID) to summarize the whole thread.",
             color = c.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, lineHeight = 22.sp)
         Spacer(Modifier.height(6.dp))
         Text(

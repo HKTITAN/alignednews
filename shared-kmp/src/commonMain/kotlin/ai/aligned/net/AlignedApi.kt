@@ -13,7 +13,10 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * The complete reverse-engineered surface of https://alignednews.ai/api,
@@ -126,8 +129,8 @@ class AlignedApi(
             val line = channel.readUTF8Line() ?: break
             if (!line.startsWith("data:")) continue
             val payload = line.removePrefix("data:").trim()
-            if (payload.isEmpty()) continue
-            val evt = json.decodeFromString<ChatEvent>(payload)
+            if (payload.isEmpty() || payload == "[DONE]") continue
+            val evt = parseChatEvent(payload) ?: continue
             emit(evt)
             if (evt is ChatEvent.Done) break
             buf.append(evt.toString())
@@ -164,3 +167,25 @@ class AlignedApi(
 enum class Vote(val wire: String) { Up("up"), Down("down") }
 
 private fun String.urlEncode(): String = this.encodeURLQueryComponent()
+
+private fun parseChatEvent(payload: String): ChatEvent? = runCatching {
+    val root = chatJson.parseToJsonElement(payload) as? JsonObject ?: return null
+    when (root["type"]?.jsonPrimitive?.contentOrNull) {
+        "token" -> ChatEvent.Token(root["text"]?.jsonPrimitive?.contentOrNull.orEmpty())
+        "done" -> ChatEvent.Done
+        "citations" -> ChatEvent.Citations(root["data"])
+        else -> null
+    }
+}.getOrNull()
+
+private val JsonElement.jsonPrimitive: JsonPrimitive
+    get() = this as? JsonPrimitive ?: JsonPrimitive("")
+
+private val JsonPrimitive.contentOrNull: String?
+    get() = runCatching { content }.getOrNull()
+
+private val chatJson = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+    explicitNulls = false
+}

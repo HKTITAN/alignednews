@@ -52,10 +52,19 @@ class SummarizeViewModel @Inject constructor(
     fun setInput(s: String) { input.value = s }
 
     fun submit() {
-        val url = input.value.trim()
-        if (url.isBlank() || _state.value.loading) return
-        val tweetId = tweetIdFromUrl(url)
-        val handle = handleFromUrl(url)
+        val raw = input.value.trim()
+        if (raw.isBlank() || _state.value.loading) return
+        val parsed = normalizeTweetInput(raw)
+        if (parsed == null) {
+            _state.value = SummarizeState(
+                loading = false,
+                error = "Paste a valid X/Twitter URL or a tweet ID."
+            )
+            return
+        }
+        val url = parsed.url
+        val tweetId = parsed.tweetId
+        val handle = parsed.handle
 
         _state.value = SummarizeState(loading = true)
         viewModelScope.launch {
@@ -128,6 +137,34 @@ class SummarizeViewModel @Inject constructor(
 }
 
 private val TweetIdRegex = Regex("""(?:twitter\.com|x\.com)/([^/?#]+)/status/(\d+)""", RegexOption.IGNORE_CASE)
+private val BareStatusRegex = Regex("""(?:^|/)(?:status/)?(\d{8,})$""", RegexOption.IGNORE_CASE)
 
-fun tweetIdFromUrl(url: String): String? = TweetIdRegex.find(url)?.groupValues?.get(2)
-fun handleFromUrl(url: String): String?  = TweetIdRegex.find(url)?.groupValues?.get(1)
+private data class ParsedTweetInput(val url: String, val tweetId: String?, val handle: String?)
+
+private fun normalizeTweetInput(raw: String): ParsedTweetInput? {
+    val trimmed = raw.trim().trimEnd('.', ',', ';', ')', ']', '>')
+    if (trimmed.isBlank()) return null
+    val withScheme = when {
+        trimmed.startsWith("http://", ignoreCase = true) ||
+            trimmed.startsWith("https://", ignoreCase = true) -> trimmed
+        trimmed.contains("x.com/", ignoreCase = true) ||
+            trimmed.contains("twitter.com/", ignoreCase = true) -> "https://$trimmed"
+        trimmed.startsWith("status/", ignoreCase = true) -> "https://x.com/i/$trimmed"
+        BareStatusRegex.matches(trimmed) -> {
+            val id = BareStatusRegex.find(trimmed)?.groupValues?.get(1) ?: return null
+            "https://x.com/i/status/$id"
+        }
+        else -> return null
+    }
+    return ParsedTweetInput(
+        url = withScheme,
+        tweetId = tweetIdFromUrl(withScheme) ?: BareStatusRegex.find(trimmed)?.groupValues?.get(1),
+        handle = handleFromUrl(withScheme)
+    )
+}
+
+fun tweetIdFromUrl(url: String): String? =
+    TweetIdRegex.find(url)?.groupValues?.get(2)
+
+fun handleFromUrl(url: String): String? =
+    TweetIdRegex.find(url)?.groupValues?.get(1)
