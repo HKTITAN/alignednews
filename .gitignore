@@ -1,0 +1,36 @@
+# --- .NET / WinUI ---
+bin/
+obj/
+*.user
+*.suo
+*.lock.json
+*.nupkg
+*.snupkg
+*.pdb
+*.publishsettings
+
+# --- Android / Kotlin ---
+.gradle/
+build/
+local.properties
+captures/
+*.iml
+*.hprof
+*.apk
+*.aab
+*.keystore
+keystore.properties
+
+# --- IDEs ---
+.idea/
+.vs/
+.vscode/
+.fleet/
+*.swp
+
+# --- macOS ---
+.DS_Store
+
+# --- Misc temp ---
+*.log
+*.tmp
