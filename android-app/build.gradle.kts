@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
@@ -54,19 +55,16 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    "kapt"(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
 
     implementation(libs.coil.compose)
 
     implementation(libs.hilt.android)
-    "kapt"(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.work)
-    "kapt"(libs.hilt.work.compiler)
+    kapt(libs.hilt.work.compiler)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
 }
-
-// kapt
-apply(plugin = "kotlin-kapt")
